@@ -16,14 +16,15 @@ def answ(txt):
                     break
 
 
+
 class Game:
-    def __init__(self, link, users, score):
+    def __init__(self, link, users, score, text):
         self.link = link;
         self.users = users;
         self.score = score;
+        self.text = text;
     def __repr__(self):
-        return repr((self.link, self.users, self.score))
-
+        return repr((self.link, self.users, self.score, self.text))
 class User:
     def __init__(self, id, games):
         self.id = id;
@@ -41,7 +42,7 @@ group_id="-53524685";
 offset=1
 
 count = 100
-session = vk.Session(access_token="TOKEN_HERE!")
+session = vk.Session(access_token="TOKEN!")
 session2= vk.Session()
 vkapi = vk.API(session, timeout=10, v='5.50')
 vkap = vk.API(session2, timeout=10, v='5.50')
@@ -67,7 +68,7 @@ while offset+count <= 3224:
         for attach in post["attachments"]:
             if attach["type"] == 'poll':
                if len(attach["poll"]["answers"]) == 6:
-                        game = Game('https://vk.com/wall'+group_id+'_'+str(post['id']), attach["poll"]["votes"], attach["poll"]["answers"][0]["rate"])
+                        game = Game('https://vk.com/wall'+group_id+'_'+str(post['id']), attach["poll"]["votes"], attach["poll"]["answers"][0]["rate"], post['text'])
                         games.append(game)
                         #Grapher
                #        while True:
@@ -82,7 +83,7 @@ while offset+count <= 3224:
                  #               break
     offset +=count
     #print(str(("Инициализация: ", offset)))
-
+print('Inited!')
 numoftry=0
 while True:
     while True:
