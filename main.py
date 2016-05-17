@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import vk, time, random, answers#, networkx as nx
+import vk, time, answers
 
 
 def answ(txt):
@@ -20,17 +20,10 @@ def answ(txt):
 class Game:
     def __init__(self, link, users, score, text):
         self.link = link;
-        self.users = users;
         self.score = score;
         self.text = text;
     def __repr__(self):
         return repr((self.link, self.users, self.score, self.text))
-class User:
-    def __init__(self, id, games):
-        self.id = id;
-        self.games = games;
-    def __repr__(self):
-        return repr((self.id, self.games))
 
 #Games
 games = list()
@@ -42,7 +35,7 @@ group_id="-53524685";
 offset=1
 
 count = 100
-session = vk.Session(access_token="TOKEN!")
+session = vk.Session(access_token="5596e7e43c5b0638834d2a147ca4439c4c216c702298aff10a9c12528ea154aadd803139fa0ec50354bd6")
 session2= vk.Session()
 vkapi = vk.API(session, timeout=10, v='5.50')
 vkap = vk.API(session2, timeout=10, v='5.50')
@@ -62,7 +55,6 @@ while offset+count <= 3224:
         else:
 
             break
-    #print(feedback)
     for post in feedback['items']:
       if 'attachments' in post:
         for attach in post["attachments"]:
@@ -70,19 +62,8 @@ while offset+count <= 3224:
                if len(attach["poll"]["answers"]) == 6:
                         game = Game('https://vk.com/wall'+group_id+'_'+str(post['id']), attach["poll"]["votes"], attach["poll"]["answers"][0]["rate"], post['text'])
                         games.append(game)
-                        #Grapher
-               #        while True:
-             #               try:
-          #                      poll = vkap.polls.getVoters(owner_id=group_id, poll_id = str(attach["poll"]["id"]), answer_ids= str(attach["poll"]["answer_id"]))
-           #                     print(poll["users"]["items"])
-            #                except:
-             #                   numoftry+=1
-              #                  print(poll)
-               #                 continue
-                #            else:
-                 #               break
     offset +=count
-    #print(str(("Инициализация: ", offset)))
+    print(str(("Initilization progress: ", offset)))
 print('Inited!')
 numoftry=0
 while True:
@@ -101,6 +82,10 @@ while True:
         msg = message['body'].lower()
         if message['read_state'] == 0:
          #print(message['body'])
+         answer = answers.getHelp(msg)
+         if answer!=None:
+             answ(answer)
+         answer=None
          answer = answers.RandomPost(msg, games)
          if answer!=None:
              answ(answer)
