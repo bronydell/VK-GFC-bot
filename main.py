@@ -3,6 +3,12 @@
 
 import vk, time, answers
 import threading
+import os
+import psutil, logging
+
+
+with open('botan.config', 'r') as myfile: #You must put key for your bot in botan.config!!! IMPORTANT!!!!
+    botan_token=myfile.read().replace('\n', '')
 
 class Game:
     def __init__(self, link, users, score, text):
@@ -55,15 +61,18 @@ def getGames(vkap):
     # call f() again in one day
     from datetime import datetime
     print('(', str(datetime.now()),') Inited ', len(games), ' posts!')
+    process = psutil.Process(os.getpid())
     threading.Timer(60*60*24, getGames, [vkap]).start()
 
 
 def refreshMessages(vkapi):
     #print(len(games))
     if(len(games)>0):
+        #print('HERE WE GO!')
         while True:
             try:
                 dic = vkapi.messages.get(count=100, out=0, filters=0)
+                #print(dic)
             except:
                 continue
             else:
@@ -75,15 +84,18 @@ def refreshMessages(vkapi):
             if message['read_state'] == 0:
                 answer = answers.getHelp(msg)
                 if answer!=None:
-                    answ(message, answer)
+                    answ(message, answer, 'Help')
                     answer=None
                 answer = answers.RandomPost(msg, games)
                 if answer!=None:
-                    answ(message, answer)
+                    answ(message, answer, 'Random post')
                 #print(answer)
-    threading.Timer(1.5, refreshMessages, [vkapi]).start()
+    threading.Timer(1, refreshMessages, [vkapi]).start()
 
-def answ(message, txt):
+def answ(message, txt, event):
+    uid = message['user_id']
+    message_dict = txt
+    event_name = event
     while True:
                 try:
                     vkapi.messages.send(user_id=message['user_id'],forward_messages=message['id'], message=txt)
@@ -96,8 +108,9 @@ def answ(message, txt):
 
 
 
-
-session = vk.Session(access_token="TOKEN!")
+with open('key.config', 'r') as myfile: #You must put key for your bot in botan.config!!! IMPORTANT!!!!
+    key=myfile.read().replace('\n', '')
+session = vk.Session(access_token=key)
 session2= vk.Session()
 vkapi = vk.API(session, timeout=10, v='5.50')
 vkap = vk.API(session2, timeout=10, v='5.50')
