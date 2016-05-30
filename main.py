@@ -4,7 +4,7 @@
 import vk, time, answers
 import threading
 import os
-import psutil, logging
+import botan, logging
 
 
 with open('botan.config', 'r') as myfile: #You must put key for your bot in botan.config!!! IMPORTANT!!!!
@@ -61,7 +61,6 @@ def getGames(vkap):
     # call f() again in one day
     from datetime import datetime
     print('(', str(datetime.now()),') Inited ', len(games), ' posts!')
-    process = psutil.Process(os.getpid())
     threading.Timer(60*60*24, getGames, [vkap]).start()
 
 
@@ -96,6 +95,7 @@ def answ(message, txt, event):
     uid = message['user_id']
     message_dict = txt
     event_name = event
+    botan.track(botan_token, uid, message_dict, event_name)
     while True:
                 try:
                     vkapi.messages.send(user_id=message['user_id'],forward_messages=message['id'], message=txt)
