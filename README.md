@@ -27,3 +27,8 @@
 
 Попробовать можно, перейдя по [ссылке](https://vk.me/gamesforcomp).
 Исходный код можно глянуть на [Github](https://github.com/bronydell/VK-GFC-bot)
+
+Ах, да. Зависимости:
+VK by [dimka665](https://github.com/dimka665/vk)
+Ставится с помощью pip:
+> pip install vk
