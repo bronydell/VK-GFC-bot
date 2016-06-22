@@ -6,10 +6,12 @@ import threading
 import os
 import botan, logging
 
+#ЕСЛИ НЕ КОМПИЛИРУЕТСЯ, ТО УБЕРИТЕ РУССКИЕ КОМЕНТАРИИ!
 
-with open('botan.config', 'r') as myfile: #You must put key for your bot in botan.config!!! IMPORTANT!!!!
+with open('botan.config', 'r') as myfile: #Засунь ключ от botana в botan.config!!! ЭТО ВАЖНО!!!!
     botan_token=myfile.read().replace('\n', '')
 
+#Объект игры
 class Game:
     def __init__(self, link, users, score, text):
         self.link = link;
@@ -18,9 +20,9 @@ class Game:
     def __repr__(self):
         return repr((self.link, self.users, self.score, self.text))
 
-#Grop ID
+#ID группы
 group_id="-53524685";
-#Global varible games
+#Глобальная переменная массива игр
 games = list()
 
 
@@ -39,7 +41,10 @@ def getGames(vkap):
             else:
                 break
     available=feedback['count']
-    #Alhorithm
+    #Алгоритм сбора информации
+    #1. Берем все посты и фасуем в обхекты
+    #2. Не фасуем в объект, если нет 6 вариантов опроса(5, 4, 3, 2, 1, Результат)
+    #3. Обнволяем массив
     while offset+count <= available:
         while True:
             try:
@@ -58,12 +63,12 @@ def getGames(vkap):
                             game = Game('https://vk.com/wall'+group_id+'_'+str(post['id']), attach["poll"]["votes"], attach["poll"]["answers"][0]["rate"], post['text'])
                             games.append(game)
         offset +=count
-    # call f() again in one day
+    # Функция f() вызывается 1 раз в день
     from datetime import datetime
     print('(', str(datetime.now()),') Inited ', len(games), ' posts!')
     threading.Timer(60*60*24, getGames, [vkap]).start()
 
-
+#Проверка обновлений
 def refreshMessages(vkapi):
     #print(len(games))
     if(len(games)>0):
@@ -91,6 +96,7 @@ def refreshMessages(vkapi):
                 #print(answer)
     threading.Timer(1, refreshMessages, [vkapi]).start()
 
+#Шаблонный ответ
 def answ(message, txt, event):
     uid = message['user_id']
     message_dict = txt
@@ -108,16 +114,16 @@ def answ(message, txt, event):
 
 
 
-with open('key.config', 'r') as myfile: #You must put key for your bot in botan.config!!! IMPORTANT!!!!
+with open('key.config', 'r') as myfile: #Засунь ключ сообщества в key.config!!! ЭТО ВАЖНО!!!!
     key=myfile.read().replace('\n', '')
-session = vk.Session(access_token=key)
+session = vk.Session(access_token=key) #Создание сессии
 session2= vk.Session()
 vkapi = vk.API(session, timeout=10, v='5.50')
 vkap = vk.API(session2, timeout=10, v='5.50')
 
-#Thread Games of...
+#Поток обработки игр...
 getGames(vkap)
-#Thread Answers of...
+#Поток ответов...
 refreshMessages(vkapi)
 
 
