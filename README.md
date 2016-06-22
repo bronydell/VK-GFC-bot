@@ -1,5 +1,5 @@
 # VK-GFC-bot
-This is simple bot, that sends user a random post from group
+
 Мы написали платформу для поиска игр. Пока что, бот рекомендует абсолютно случайные игры.
 Вот что реализовано: 
 * Поиск по записям 
