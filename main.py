@@ -4,9 +4,8 @@
 import vk, time, answers
 import threading
 import recomender
-import botan, logging
+import botan
 
-# ЕСЛИ НЕ КОМПИЛИРУЕТСЯ, ТО УБЕРИТЕ РУССКИЕ КОМЕНТАРИИ!
 
 with open('botan.config', 'r') as myfile:  # Засунь ключ от botana в botan.config!!! ЭТО ВАЖНО!!!!
     botan_token = myfile.read().replace('\n', '')
@@ -238,10 +237,13 @@ def answ(message, txt, event):
 
 with open('key.config', 'r') as myfile:  # Засунь ключ сообщества в key.config!!! ЭТО ВАЖНО!!!!
     key = myfile.read().replace('\n', '')
-with open('userkey.config', 'r') as myfile:  # Засунь ключ сообщества в userkey.config!!! ЭТО ВАЖНО!!!!
-    userkey = myfile.read().replace('\n', '')
+
 session = vk.Session(access_token=key)  # Создание сессии
-session2 = vk.Session(access_token=userkey)
+
+email = input("Email: ")
+password = input("Password: ")
+
+session2 = vk.AuthSession(app_id='5037590', user_login=email, user_password=password, scope='offline,groups')
 vkapi = vk.API(session, timeout=10, v='5.50')
 vkap = vk.API(session2, timeout=10, v='5.50')
 
