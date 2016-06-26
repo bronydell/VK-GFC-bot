@@ -51,7 +51,6 @@ def getGames(vkap):
             feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
                                      extended="0")
         except:
-            print("DAFUQ?")
             continue
         else:
             break
@@ -66,11 +65,11 @@ def getGames(vkap):
                 feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
                                          extended="0")
             except:
-                print("DAFUQ?")
                 continue
             else:
                 break
         # print('YO!')
+        print(str(post['id']))
         for post in feedback['items']:
             if 'attachments' in post:
                 for attach in post["attachments"]:
