@@ -213,7 +213,7 @@ def refreshMessages(vkapi):
                     answer=None
                 answer = answers.getStat(message, stats)
                 if answer != None:
-                    answ(message, answer, 'Help')
+                    answ(msg, answer, 'Stats')
                     answer = None
                 answer = answers.getHelp(message)
                 if answer != None:
