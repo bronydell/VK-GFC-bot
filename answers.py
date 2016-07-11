@@ -101,7 +101,7 @@ def getStat(msg, stat):
     isRight = False
     #print(msg)
     for inp in input:
-        if(msg.endswith(inp) != -1) and (msg.startswith(inp) != -1):
+        if(msg.endswith(inp)) and (msg.startswith(inp)):
             isRight=True
             break
     if(isRight):
