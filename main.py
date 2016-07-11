@@ -71,8 +71,8 @@ def getGames(vkap):
             else:
                 break
         # print('YO!')
-        print(str(post['id']))
         for post in feedback['items']:
+            print(str(post['id']))
             if 'attachments' in post:
                 for attach in post["attachments"]:
                     if attach["type"] == 'poll':
@@ -114,7 +114,7 @@ def getGames(vkap):
                         counters = [0] * 6
                         for answ in resp:
                             counters[i] = answ["users"]["count"]
-                        while poll_offset - pollcount <= max(pollcount):
+                        while poll_offset - pollcount <= max(counters):
                             i = 5
                             for answ in resp:
 
