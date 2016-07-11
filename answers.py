@@ -96,3 +96,15 @@ def getHelp(msg):
     if(isRight):
         return answer
 
+def getStat(msg, stat):
+    input = ["статистика"]
+    isRight = False
+    #print(msg)
+    for inp in input:
+        if(msg.endswith(inp) != -1) and (msg.startswith(inp) != -1):
+            isRight=True
+            break
+    if(isRight):
+        return stat
+
+

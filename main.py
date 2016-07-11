@@ -31,6 +31,7 @@ dataset = None
 # Бета тестеры
 testers = list()
 
+pollcount = 1000
 
 def deleteContent(fName):
     with open(fName, "w"):
@@ -88,14 +89,14 @@ def getGames(vkap):
                             try:
                                 resp = vkap.polls.getVoters(owner_id=group_id, answer_ids=ids,
                                                             poll_id=attach["poll"]['id'],
-                                                            offset=poll_offset, count=count)
+                                                            offset=poll_offset, count=pollcount)
                             except vk.exceptions.VkAPIError as d:
 
                                 # print(d)
                                 if (d.code == 6):
                                     time.sleep(1)
                                 else:
-                                    poll_offset += count
+                                    poll_offset += pollcount
                                     break
                                 continue
 
@@ -104,14 +105,14 @@ def getGames(vkap):
                                 continue
                             else:
 
-                                poll_offset += count
+                                poll_offset += pollcount
                                 break
 
                         i = 0
                         counters = [0] * 6
                         for answ in resp:
                             counters[i] = answ["users"]["count"]
-                        while poll_offset - 100 <= max(counters):
+                        while poll_offset - pollcount <= max(pollcount):
                             i = 5
                             for answ in resp:
 
@@ -125,14 +126,14 @@ def getGames(vkap):
                                 try:
                                     resp = vkap.polls.getVoters(owner_id=group_id, answer_ids=ids,
                                                                 poll_id=attach["poll"]['id'],
-                                                                offset=poll_offset, count=count)
+                                                                offset=poll_offset, count=pollcount)
                                 except vk.exceptions.VkAPIError as d:
 
                                     # print(d)
                                     if (d.code == 6):
                                         time.sleep(1)
                                     else:
-                                        poll_offset += count
+                                        poll_offset += pollcount
                                         break
                                     continue
                                 except Exception:
@@ -140,7 +141,7 @@ def getGames(vkap):
                                     continue
                                 else:
 
-                                    poll_offset += count
+                                    poll_offset += pollcount
                                     break
         offset += count
     dataset = recomender.loadDataset("db.dat")
@@ -208,6 +209,11 @@ def refreshMessages(vkapi):
                 elif answer != None:
                     answ(message, "Ты не бета тестер!", "Non Beta")
                     answer=None
+                answer = answers.getStat(message, "Doge")
+                if answer != None:
+                    answ(message, answer, 'Help')
+                    answer = None
+                answer = answers.getHelp(message)
                 if answer != None:
                     answ(message, answer, 'Help')
                     answer = None
@@ -238,12 +244,11 @@ def answ(message, txt, event):
 with open('key.config', 'r') as myfile:  # Засунь ключ сообщества в key.config!!! ЭТО ВАЖНО!!!!
     key = myfile.read().replace('\n', '')
 
+with open('userkey.config', 'r') as myfile:  # Засунь ключ сообщества в userkey.config!!! ЭТО ВАЖНО!!!!
+    userkey = myfile.read().replace('\n', '')
+
 session = vk.Session(access_token=key)  # Создание сессии
-
-email = input("Email: ")
-password = input("Password: ")
-
-session2 = vk.AuthSession(app_id='5037590', user_login=email, user_password=password, scope='offline,groups')
+session2 = vk.Session(access_token=userkey)
 vkapi = vk.API(session, timeout=10, v='5.50')
 vkap = vk.API(session2, timeout=10, v='5.50')
 
