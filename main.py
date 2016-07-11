@@ -211,10 +211,10 @@ def refreshMessages(vkapi):
                 elif answer != None:
                     answ(message, "Ты не бета тестер!", "Non Beta")
                     answer=None
-                answer = answers.getStat(msg, stats)
-                if answer != None:
-                    answ(msg, answer, 'Stats')
-                    answer = None
+                #answer = answers.getStat(msg, stats)
+                #if answer != None:
+                #    answ(msg, answer, 'Stats')
+                #    answer = None
                 answer = answers.getHelp(message)
                 if answer != None:
                     answ(message, answer, 'Help')
