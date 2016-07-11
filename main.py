@@ -48,8 +48,14 @@ def getGames(vkap):
     # deleteContent("db.dat")
     offset = 1
     count = 100
-    feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
+    while True:
+        try:
+            feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
                                      extended="0")
+        except:
+            continue
+        else:
+            break
     available = feedback['count']
     # Алгоритм сбора информации
     # 1. Берем все посты и фасуем в обхекты
