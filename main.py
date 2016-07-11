@@ -30,7 +30,9 @@ games = list()
 dataset = None
 # Бета тестеры
 testers = list()
-
+# Статистика
+stats = "???"
+# count для опросов
 pollcount = 1000
 
 def deleteContent(fName):
@@ -147,7 +149,7 @@ def getGames(vkap):
     dataset = recomender.loadDataset("db.dat")
     # Функция f() вызывается 1 раз в день
     from datetime import datetime
-    print('(', str(datetime.now()), ') Inited ', len(games), ' posts!')
+    stats = '(', str(datetime.now()), ') Inited ', len(games), ' posts!';
     threading.Timer(60 * 60 * 24, getGames, [vkap]).start()
 
 
@@ -209,7 +211,7 @@ def refreshMessages(vkapi):
                 elif answer != None:
                     answ(message, "Ты не бета тестер!", "Non Beta")
                     answer=None
-                answer = answers.getStat(message, "Doge")
+                answer = answers.getStat(message, stats)
                 if answer != None:
                     answ(message, answer, 'Help')
                     answer = None
