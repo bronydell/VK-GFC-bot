@@ -61,7 +61,7 @@ def getGames(vkap):
     # 1. Берем все посты и фасуем в обхекты
     # 2. Не фасуем в объект, если нет 6 вариантов опроса(5, 4, 3, 2, 1, Результат)
     # 3. Обнволяем массив
-    while offset + count <= 100:
+    while offset + count <= available:
         while True:
             try:
                 feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
