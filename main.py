@@ -45,7 +45,7 @@ def getGames(vkap):
     global dataset
     dataset = None
     games = list()
-    # deleteContent("db.dat")
+    deleteContent("db.dat")
     offset = 1
     count = 100
     while True:
@@ -61,7 +61,7 @@ def getGames(vkap):
     # 1. Берем все посты и фасуем в обхекты
     # 2. Не фасуем в объект, если нет 6 вариантов опроса(5, 4, 3, 2, 1, Результат)
     # 3. Обнволяем массив
-    while offset + count <= available:
+    while offset <= 100:
         while True:
             try:
                 feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
@@ -149,6 +149,7 @@ def getGames(vkap):
     dataset = recomender.loadDataset("db.dat")
     # Функция f() вызывается 1 раз в день
     from datetime import datetime
+    global stats
     stats = '(', str(datetime.now()), ') Inited ', len(games), ' posts!';
     threading.Timer(60 * 60 * 24, getGames, [vkap]).start()
 
@@ -211,11 +212,11 @@ def refreshMessages(vkapi):
                 elif answer != None:
                     answ(message, "Ты не бета тестер!", "Non Beta")
                     answer=None
-                #answer = answers.getStat(msg, stats)
-                #if answer != None:
-                #    answ(msg, answer, 'Stats')
-                #    answer = None
-                answer = answers.getHelp(message)
+                answer = answers.getStat(msg, stats)
+                if answer != None:
+                    answ(message, answer, 'Stats')
+                    answer = None
+                answer = answers.getHelp(msg)
                 if answer != None:
                     answ(message, answer, 'Help')
                     answer = None
