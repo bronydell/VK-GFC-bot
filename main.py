@@ -67,12 +67,13 @@ def getGames(vkap):
                 feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
                                          extended="0")
             except:
+                print("Key error!")
                 continue
             else:
                 break
+
         # print('YO!')
         for post in feedback['items']:
-            print(str(post['id']))
             if 'attachments' in post:
                 for attach in post["attachments"]:
                     if attach["type"] == 'poll':
@@ -80,7 +81,6 @@ def getGames(vkap):
                             game = Game('https://vk.com/wall' + group_id + '_' + str(post['id']),
                                         attach["poll"]["votes"], attach["poll"]["answers"][0]["rate"], post['text'])
                             games.append(game)
-                        print(str(post['id']))
                         # Получаем все результаты опросов и ВСЕ записываем в db.dat
                         ids = ""
                         for answer in attach["poll"]["answers"]:
@@ -150,7 +150,7 @@ def getGames(vkap):
     # Функция f() вызывается 1 раз в день
     from datetime import datetime
     global stats
-    stats = '(', str(datetime.now()), ') Inited ', len(games), ' posts!';
+    stats = '('+ str(datetime.now())+ ') Inited '+ str(len(games))+ ' posts!';
     threading.Timer(60 * 60 * 24, getGames, [vkap]).start()
 
 
@@ -175,13 +175,14 @@ def initBeters(vkap):
 
     global testers
     testers = resp['items']
+    print(testers)
     threading.Timer(60 * 60, initBeters, [vkap]).start()
 
 
 
 
 def isBetaTester(message):
-    if message['user_id'] in testers == True:
+    if message['user_id'] in testers:
         return True
     else:
         return False
@@ -190,11 +191,9 @@ def isBetaTester(message):
 def refreshMessages(vkapi):
     # print(len(games))
     if (len(games) > 0 and dataset is not None):
-        # print('HERE WE GO!')
         while True:
             try:
                 dic = vkapi.messages.get(count=100, out=0, filters=0)
-                # print(dic)
             except:
                 continue
             else:
@@ -202,10 +201,8 @@ def refreshMessages(vkapi):
 
         for message in dic["items"]:
             msg = message['body'].lower()
-            # print(msg)
             if message['read_state'] == 0:
                 answer = answers.getRecommendations(message, dataset)
-                print(answer)
                 if answer != None and isBetaTester(message):
                     answ(message, answer, 'Recommendation!')
                     answer = None
