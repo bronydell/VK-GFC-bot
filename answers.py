@@ -20,7 +20,7 @@ def RandomPost(msg, games):
         return str(random.choice(output)+ str(getPost(msg, games)) + random.choice(outputend))
 
 def getRecommendations(message, dataset):
-    input = ['порекомендуй игру']
+    input = ['порекомендуй игру', 'порекомендуй игры']
     isRight = False
     #print(msg)
     msg = message['body'].lower()
@@ -34,7 +34,7 @@ def getRecommendations(message, dataset):
         try:
             result = recomender.getRecommendations(dataset, str(message["user_id"]))
             i = 0
-            print(result)
+            #print(result)
             answer = "Вот результаты за сегодня, составленые специально для тебя: \n"
             while(i<10):
                 answer+=str(i+1)+". https://vk.com/wall"+group_id+"_"+str(result[i][1])+"\n"
@@ -61,7 +61,7 @@ def getPost(msg, games):
                 isRight=False
                 for phas in phases:
                     phas.replace(" ", "")
-                    if(msg.find(phas) == -1):
+                    if(msg.find(" "+phas+" ") == -1):
                         isRight=False
                         break
                     else:
@@ -70,7 +70,7 @@ def getPost(msg, games):
                     links.append(game.link)
 
             #Однозапросный поиск
-            if(game.text.find(phase)!= -1):
+            if(game.text.find(" "+phas+" ")!= -1):
                 links.append(game.link)
         #Нашли что-то. Пикаем
         if(len(links)>0):

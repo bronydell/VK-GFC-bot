@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import vk, time, answers
-import threading
+import threading, getopt
 import recomender
 import botan
-
 
 with open('botan.config', 'r') as myfile:  # Засунь ключ от botana в botan.config!!! ЭТО ВАЖНО!!!!
     botan_token = myfile.read().replace('\n', '')
@@ -14,9 +13,9 @@ with open('botan.config', 'r') as myfile:  # Засунь ключ от botana �
 # Объект игры
 class Game:
     def __init__(self, link, users, score, text):
-        self.link = link;
-        self.score = score;
-        self.text = text;
+        self.link = link
+        self.score = score
+        self.text = text
 
     def __repr__(self):
         return repr((self.link, self.users, self.score, self.text))
@@ -34,6 +33,7 @@ testers = list()
 stats = "???"
 # count для опросов
 pollcount = 1000
+
 
 def deleteContent(fName):
     with open(fName, "w"):
@@ -53,6 +53,7 @@ def getGames(vkap):
             feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
                                      extended="0")
         except:
+            print("Key error!")
             continue
         else:
             break
@@ -67,7 +68,6 @@ def getGames(vkap):
                 feedback = vkap.wall.get(owner_id=group_id, offset=str(offset), count=str(count), filter="owner",
                                          extended="0")
             except:
-                print("Key error!")
                 continue
             else:
                 break
@@ -81,49 +81,12 @@ def getGames(vkap):
                             game = Game('https://vk.com/wall' + group_id + '_' + str(post['id']),
                                         attach["poll"]["votes"], attach["poll"]["answers"][0]["rate"], post['text'])
                             games.append(game)
-                        # Получаем все результаты опросов и ВСЕ записываем в db.dat
-                        ids = ""
-                        for answer in attach["poll"]["answers"]:
-                            ids += str(answer["id"]) + ", "
-                        ids = ids[:-2]
-                        poll_offset = 0
-                        while True:
-                            try:
-                                resp = vkap.polls.getVoters(owner_id=group_id, answer_ids=ids,
-                                                            poll_id=attach["poll"]['id'],
-                                                            offset=poll_offset, count=pollcount)
-                            except vk.exceptions.VkAPIError as d:
-
-                                # print(d)
-                                if (d.code == 6):
-                                    time.sleep(1)
-                                else:
-                                    poll_offset += pollcount
-                                    break
-                                continue
-
-                            except Exception:
-                                print('Miracle!')
-                                continue
-                            else:
-
-                                poll_offset += pollcount
-                                break
-
-                        i = 0
-                        counters = [0] * 6
-                        for answ in resp:
-                            counters[i] = answ["users"]["count"]
-                        while poll_offset - pollcount <= max(counters):
-                            i = 5
-                            for answ in resp:
-
-                                for voter in answ["users"]["items"]:
-                                    with open("db.dat", "a") as myfile:
-                                        if (i != 0):
-                                            myfile.write(str(voter) + " " + str(post['id']) + " " + str(i) + "\n")
-
-                                i -= 1
+                            # Получаем все результаты опросов и ВСЕ записываем в db.dat
+                            ids = ""
+                            for answer in attach["poll"]["answers"]:
+                                ids += str(answer["id"]) + ", "
+                            ids = ids[:-2]
+                            poll_offset = 0
                             while True:
                                 try:
                                     resp = vkap.polls.getVoters(owner_id=group_id, answer_ids=ids,
@@ -138,19 +101,57 @@ def getGames(vkap):
                                         poll_offset += pollcount
                                         break
                                     continue
+
                                 except Exception:
-                                    time.sleep(0.5)
+                                    print('Miracle!')
                                     continue
                                 else:
 
                                     poll_offset += pollcount
                                     break
+
+                            i = 0
+                            counters = [0] * 6
+                            for answ in resp:
+                                counters[i] = answ["users"]["count"]
+                            while poll_offset - pollcount <= max(counters):
+                                i = 5
+                                for answ in resp:
+
+                                    for voter in answ["users"]["items"]:
+                                        with open("db.dat", "a") as myfile:
+                                            if (i != 0):
+                                                myfile.write(str(voter) + " " + str(post['id']) + " " + str(i) + "\n")
+
+                                    i -= 1
+                                while True:
+                                    try:
+                                        resp = vkap.polls.getVoters(owner_id=group_id, answer_ids=ids,
+                                                                    poll_id=attach["poll"]['id'],
+                                                                    offset=poll_offset, count=pollcount)
+                                    except vk.exceptions.VkAPIError as d:
+
+                                        # print(d)
+                                        if (d.code == 6):
+                                            time.sleep(1)
+                                        else:
+                                            poll_offset += pollcount
+                                            break
+                                        continue
+                                    except Exception:
+                                        time.sleep(0.5)
+                                        continue
+                                    else:
+
+                                        poll_offset += pollcount
+                                        break
+                            break
         offset += count
     dataset = recomender.loadDataset("db.dat")
     # Функция f() вызывается 1 раз в день
     from datetime import datetime
     global stats
-    stats = '('+ str(datetime.now())+ ') Inited '+ str(len(games))+ ' posts!';
+    stats = '(' + str(datetime.now()) + ') Inited ' + str(len(games)) + ' posts!'
     threading.Timer(60 * 60 * 24, getGames, [vkap]).start()
 
 
@@ -175,10 +176,8 @@ def initBeters(vkap):
 
     global testers
     testers = resp['items']
-    print(testers)
+    # print(testers)
     threading.Timer(60 * 60, initBeters, [vkap]).start()
-
-
 
 
 def isBetaTester(message):
@@ -186,6 +185,7 @@ def isBetaTester(message):
         return True
     else:
         return False
+
 
 # Проверка обновлений
 def refreshMessages(vkapi):
@@ -207,8 +207,9 @@ def refreshMessages(vkapi):
                     answ(message, answer, 'Recommendation!')
                     answer = None
                 elif answer != None:
+                    print(isBetaTester(message))
                     answ(message, "Ты не бета тестер!", "Non Beta")
-                    answer=None
+                    answer = None
                 answer = answers.getStat(msg, stats)
                 if answer != None:
                     answ(message, answer, 'Stats')
@@ -239,6 +240,7 @@ def answ(message, txt, event):
         else:
 
             break
+
 
 
 with open('key.config', 'r') as myfile:  # Засунь ключ сообщества в key.config!!! ЭТО ВАЖНО!!!!
