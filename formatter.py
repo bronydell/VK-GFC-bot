@@ -1,25 +1,15 @@
-﻿import random
+import random
 import recomender
 
-group_id="-53524685"
+group_id = "-53524685"
 
 #Берем рандомный пост, если есть одна из фраз, что в input[]
 def RandomPost(msg, games):
-    input = ['во что мне поиграть', 'во что поиграть', 'во что мне проиграть', 'во что проиграть']
     output = ['Попробуй вот это: ', 'Может это? ', 'Ну, попробуй поиграть вот в это: ']
     outputend = [' . Не забудь поставить игре оценку ;)', ' . Репостни, если понравилась!', ' . GLHF!']
-    isRight = False
-    #print(msg)
-    for inp in input:
-        #Ищем что-то
-        if(msg.find(inp) != -1):
-            isRight=True
-            break
-    #Нашли! Отвечаем
-    if(isRight):
-        return str(random.choice(output)+ str(getPost(msg, games)) + random.choice(outputend))
+    return str(random.choice(output)+ str(getPost(msg, games)) + random.choice(outputend))
 
-def getRecommendations(message, dataset):
+'''def getRecommendations(message, dataset):
     input = ['порекомендуй игру', 'порекомендуй игры']
     isRight = False
     #print(msg)
@@ -42,7 +32,7 @@ def getRecommendations(message, dataset):
             return answer
         except:
             return 'Вы не учавствали в опросах группы. Зайдите в группу и проголосуйте за игры, в которые вы играли'
-
+'''
 
 #Подбиваем пост под поиск
 def getPost(msg, games):
@@ -50,27 +40,24 @@ def getPost(msg, games):
     phase = msg.split('(')[-1]
     if phase.endswith(')') or phase.endswith(')?') or phase.endswith(') ?'):
         phase = phase[:-1]
+
+
         #Массив запросов на поиск в сообещниий(Например, (Warcraft, RPG))
         phases = phase.split(',')
         links = list()
-
         for game in games:
             game.text = game.text.lower()
             #Если мультипоиск(больше одного запроса)
-            if(len(phases)>1):
-                isRight=False
-                for phas in phases:
-                    phas.replace(" ", "")
-                    if(msg.find(" "+phas+" ") == -1):
-                        isRight=False
-                        break
-                    else:
-                        isRight=True
-                if(isRight):
-                    links.append(game.link)
+            isRight=False
+            for phras in phases:
 
-            #Однозапросный поиск
-            if(game.text.find(" "+phas+" ")!= -1):
+                phras.strip()
+                if game.text.find(" "+phras.lower()+" ") == -1:
+                    isRight = False
+                    break
+                else:
+                    isRight=True
+            if(isRight):
                 links.append(game.link)
         #Нашли что-то. Пикаем
         if(len(links)>0):
@@ -90,7 +77,7 @@ def getHelp(msg):
     isRight = False
     #print(msg)
     for inp in input:
-        if(msg.find(inp) != -1):
+        if(msg.find(inp.lower()) != -1):
             isRight=True
             break
     if(isRight):
@@ -99,12 +86,9 @@ def getHelp(msg):
 def getStat(msg, stat):
     input = ["статистика"]
     isRight = False
-    #print(msg)
     for inp in input:
         if(msg.find(inp) != -1):
             isRight=True
             break
     if(isRight):
         return stat
-
-
